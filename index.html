@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hacking Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>HACKING SYSTEM</h1>
+
+  <div id="timer">TIME LEFT: 180s</div>
+  <div id="log"></div>
+
+  <div id="display">----</div>
+
+  <div id="keypad"></div>
+
+  <div class="action-buttons">
+    <button onclick="submitGuess()">Enter</button>
+    <button onclick="clearInput()">Clear</button>
+  </div>
+</div>
+
+<!-- ポップアップ結果表示 -->
+<div id="result"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

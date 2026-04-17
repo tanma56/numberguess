@@ -1,0 +1,76 @@
+body {
+  background: black;
+  color: #00ff00;
+  font-family: monospace;
+  text-align: center;
+  margin: 0;
+}
+
+.container {
+  padding: 15px;
+}
+
+#log {
+  height: 140px;
+  overflow-y: auto;
+  border: 1px solid #00ff00;
+  margin: 10px 0;
+  padding: 10px;
+  text-align: left;
+}
+
+#display {
+  font-size: 32px;
+  letter-spacing: 10px;
+  margin: 10px;
+}
+
+#keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 15px;
+}
+
+button {
+  padding: 15px;
+  font-size: 18px;
+  background: black;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  margin: 8px 5px;
+}
+
+button:active {
+  background: #003300;
+}
+
+.special {
+  background: darkred;
+}
+
+.action-buttons {
+  margin-top: 15px;
+}
+
+/* 🔥 中央ポップアップ */
+#result {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  background: black;
+  border: 2px solid #00ff00;
+  padding: 20px;
+  width: 80%;
+  max-width: 300px;
+
+  display: none;
+  z-index: 1000;
+  font-size: 18px;
+}
+
+#timer {
+  font-size: 18px;
+}
