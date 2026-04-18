@@ -6,9 +6,10 @@ let time = 180;
 let timerInterval;
 let currentInput = "";
 let gameOver = false;
+let hintCount = 0; // 使用回数
 
 startTimer();
-generateKeypad();
+createKeypad();
 
 function log(msg) {
   const logDiv = document.getElementById("log");
@@ -25,43 +26,46 @@ function startTimer() {
   }, 1000);
 }
 
-function generateKeypad() {
+function createKeypad() {
   const keypad = document.getElementById("keypad");
-  keypad.innerHTML = "";
 
-  let nums = [...Array(10).keys()];
-  nums.sort(() => Math.random() - 0.5);
+  const layout = [
+    "1","2","3",
+    "4","5","6",
+    "7","8","9",
+    "Clear","0","Enter",
+    "","Hint",""
+  ];
 
-  for (let i = 0; i < 9; i++) {
-    createNumberButton(nums[i], keypad);
-  }
+  layout.forEach(key => {
+    const btn = document.createElement("button");
 
-  const oddBtn = document.createElement("button");
-  oddBtn.innerText = "Odd";
-  oddBtn.classList.add("special");
-  oddBtn.onclick = () => {
-    let lastDigit = Number(answer[3]);
-    log(lastDigit % 2 === 1 ? ">> ODD" : ">> NOT ODD");
-  };
-  keypad.appendChild(oddBtn);
+    if (key === "") {
+      btn.style.visibility = "hidden";
+      keypad.appendChild(btn);
+      return;
+    }
 
-  createNumberButton(nums[9], keypad);
+    btn.innerText = key;
 
-  const evenBtn = document.createElement("button");
-  evenBtn.innerText = "Even";
-  evenBtn.classList.add("special");
-  evenBtn.onclick = () => {
-    let lastDigit = Number(answer[3]);
-    log(lastDigit % 2 === 0 ? ">> EVEN" : ">> NOT EVEN");
-  };
-  keypad.appendChild(evenBtn);
-}
+    if (key === "Clear") {
+      btn.classList.add("special");
+      btn.onclick = clearInput;
 
-function createNumberButton(num, parent) {
-  const btn = document.createElement("button");
-  btn.innerText = num;
-  btn.onclick = () => pressNumber(num);
-  parent.appendChild(btn);
+    } else if (key === "Enter") {
+      btn.classList.add("special");
+      btn.onclick = submitGuess;
+
+    } else if (key === "Hint") {
+      btn.classList.add("special");
+      btn.onclick = useHint;
+
+    } else {
+      btn.onclick = () => pressNumber(key);
+    }
+
+    keypad.appendChild(btn);
+  });
 }
 
 function pressNumber(num) {
@@ -78,6 +82,7 @@ function updateDisplay() {
 }
 
 function clearInput() {
+  if (gameOver) return;
   currentInput = "";
   updateDisplay();
 }
@@ -104,8 +109,50 @@ function submitGuess() {
 
   currentInput = "";
   updateDisplay();
+}
 
-  generateKeypad();
+function useHint() {
+  if (gameOver) return;
+
+  // 🔥 1回制限
+  if (hintCount >= 1) {
+    log("ERROR: Hint already used");
+    return;
+  }
+
+  hintCount++;
+
+  // 🔥 60秒減少
+  time -= 60;
+  if (time < 0) time = 0;
+
+  let thousandDigit = answer[0];
+  log(">> FIRST DIGIT IS: " + thousandDigit);
+
+  document.getElementById("timer").innerText = "TIME LEFT: " + time + "s";
+
+  if (time <= 0) endGame(false);
+}
+
+function vibrateOnFail() {
+  if (navigator.vibrate) {
+    navigator.vibrate([200, 100, 200]);
+  }
+}
+
+function calculateScore() {
+  let usedTime = 180 - time;
+  let score = 10000 - (usedTime * 30) - (hintCount * 1000);
+
+  if (score < 0) score = 0;
+  return score;
+}
+
+function getRank(score) {
+  if (score >= 9000) return "S";
+  if (score >= 7000) return "A";
+  if (score >= 5000) return "B";
+  return "C";
 }
 
 function endGame(success) {
@@ -113,18 +160,28 @@ function endGame(success) {
   clearInterval(timerInterval);
 
   const result = document.getElementById("result");
+  let score = calculateScore();
+  let rank = getRank(score);
 
   if (success) {
     result.innerHTML =
-      `ACCESS GRANTED<br>password: ${answer}<br><br>SYSTEM REBOOT IN 10s...`;
+      `ACCESS GRANTED<br>
+       CODE: ${answer}<br><br>
+       SCORE: ${score}<br>
+       RANK: ${rank}<br><br>
+       SYSTEM REBOOT IN 10s...`;
   } else {
+    vibrateOnFail();
     result.innerHTML =
-      `SYSTEM LOCKED<br>password: ${answer}<br><br>SYSTEM REBOOT IN 10s...`;
+      `SYSTEM LOCKED<br>
+       CODE: ${answer}<br><br>
+       SCORE: ${score}<br>
+       RANK: ${rank}<br><br>
+       SYSTEM REBOOT IN 10s...`;
   }
 
   result.style.display = "block";
 
-  // 🔥 10秒後リロード
   setTimeout(() => {
     location.reload();
   }, 10000);
