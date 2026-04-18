@@ -33,12 +33,11 @@ body {
 }
 
 button {
-  padding: 15px;
+  padding: 18px;
   font-size: 18px;
   background: black;
   color: #00ff00;
   border: 1px solid #00ff00;
-  margin: 8px 5px;
 }
 
 button:active {
@@ -49,11 +48,6 @@ button:active {
   background: darkred;
 }
 
-.action-buttons {
-  margin-top: 15px;
-}
-
-/* 🔥 中央ポップアップ */
 #result {
   position: fixed;
   top: 50%;
@@ -68,9 +62,4 @@ button:active {
 
   display: none;
   z-index: 1000;
-  font-size: 18px;
-}
-
-#timer {
-  font-size: 18px;
 }
